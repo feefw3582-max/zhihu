@@ -1,0 +1,580 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>知乎 AI 方向 × 产品规划</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,400;9..144,500;9..144,600;9..144,700&family=Space+Grotesk:wght@300;400;500;600;700&family=Noto+Sans+SC:wght@300;400;500;600;700;900&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
+<style>
+  :root {
+    --bg: #ffffff; --bg-2: #f4f6f8; --ink: #16181d; --ink-2: #4b5563; --ink-3: #9ca3af;
+    --line: rgba(22, 24, 29, 0.09); --line-2: rgba(22, 24, 29, 0.14);
+    --accent: #2563eb; --accent-2: #60a5fa; --gold: #d4af37; --sage: #4a7c59; --rose: #c45a5a;
+    --serif: 'Fraunces', 'Noto Serif SC', Georgia, serif;
+    --sans: 'Space Grotesk', 'Noto Sans SC', -apple-system, sans-serif;
+    --zh: 'Noto Sans SC', 'PingFang SC', system-ui, sans-serif;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body { background: var(--bg); color: var(--ink); font-family: var(--zh); font-weight: 400; line-height: 1.5; overflow-x: hidden; -webkit-font-smoothing: antialiased; }
+  .bg-grain { position: fixed; inset: 0; z-index: 0; pointer-events: none;
+    background: radial-gradient(ellipse 80% 50% at 50% 0%, rgba(37, 99, 235, 0.08), transparent 60%), radial-gradient(ellipse 60% 40% at 80% 30%, rgba(212, 175, 55, 0.04), transparent 60%), radial-gradient(ellipse 60% 40% at 20% 70%, rgba(74, 124, 89, 0.04), transparent 60%); }
+  .bg-grain::after { content: ''; position: absolute; inset: 0; background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.4'/%3E%3C/svg%3E"); opacity: 0.06; mix-blend-mode: overlay; }
+
+  nav.glass { position: fixed; top: 24px; left: 50%; transform: translateX(-50%); z-index: 100; background: rgba(255, 255, 255, 0.72); backdrop-filter: blur(20px) saturate(180%); -webkit-backdrop-filter: blur(20px) saturate(180%); border: 1px solid var(--line-2); border-radius: 999px; padding: 10px 14px 10px 22px; display: flex; align-items: center; gap: 24px; font-size: 13px; font-weight: 500; }
+  nav .logo { font-family: var(--serif); font-weight: 600; font-size: 16px; letter-spacing: -0.02em; }
+  nav .logo span { color: var(--accent); }
+  nav a { color: var(--ink-2); text-decoration: none; transition: color 0.3s; font-family: var(--sans); }
+  nav a:hover { color: var(--ink); }
+
+  main { position: relative; z-index: 1; }
+  .container { max-width: 1280px; margin: 0 auto; padding: 0 48px; }
+
+  /* ===== INLINE CITATION ===== */
+  .cite { display: inline-block; font-family: var(--sans); font-size: 10px; font-weight: 500; color: var(--accent); background: rgba(37, 99, 235, 0.10); border: 1px solid rgba(37, 99, 235, 0.25); border-radius: 3px; padding: 1px 5px; margin: 0 2px; text-decoration: none; vertical-align: super; line-height: 1.3; transition: all 0.2s; }
+  .cite:hover { background: var(--accent); color: white; }
+  .cite.soft { color: var(--gold); background: rgba(212, 175, 55, 0.10); border-color: rgba(212, 175, 55, 0.25); }
+  .cite.soft:hover { background: var(--gold); }
+  .cite.obs { color: var(--ink-3); background: rgba(22,24,29,0.05); border-color: rgba(22,24,29,0.12); }
+  .cite.obs:hover { background: var(--ink-3); color: var(--bg); }
+  .cite-tip { position: relative; }
+  .cite-tip::after { content: attr(data-tip); position: absolute; bottom: 120%; left: 50%; transform: translateX(-50%); background: var(--ink); color: var(--bg); padding: 6px 10px; border-radius: 4px; font-size: 11px; white-space: nowrap; opacity: 0; pointer-events: none; transition: opacity 0.2s; z-index: 200; font-family: var(--sans); font-weight: 500; }
+  .cite-tip:hover::after { opacity: 1; }
+
+  /* ===== HERO (minimal) ===== */
+  .hero { padding: 160px 0 80px; text-align: center; }
+  .kicker { font-family: var(--sans); font-size: 12px; font-weight: 500; letter-spacing: 0.18em; text-transform: uppercase; color: var(--ink-3); display: inline-flex; align-items: center; gap: 12px; margin-bottom: 24px; }
+  .kicker::before { content: ''; width: 24px; height: 1px; background: var(--ink-3); }
+  h1.hero-h { font-family: var(--serif); font-weight: 400; font-size: clamp(2.5rem, 5vw, 5rem); line-height: 1; letter-spacing: -0.035em; color: var(--ink); max-width: 20ch; margin: 0 auto 24px; }
+  h1.hero-h em { font-style: italic; font-weight: 300; color: var(--accent); }
+  .lede { font-size: clamp(16px, 1.3vw, 19px); line-height: 1.55; color: var(--ink-2); max-width: 60ch; margin: 0 auto; }
+
+  /* ===== TIER HEADERS (subtle dividers) ===== */
+  .tier-head { padding: 60px 0 20px; border-top: 1px solid var(--line); margin-top: 80px; }
+  .tier-head .tier-label { font-family: var(--sans); font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--ink-3); margin-bottom: 8px; }
+  .tier-head .tier-title { font-family: var(--serif); font-size: 32px; font-weight: 500; color: var(--ink); letter-spacing: -0.02em; }
+  .tier-head .tier-title em { font-style: italic; color: var(--accent); font-weight: 300; }
+  .tier-head .tier-sub { color: var(--ink-2); font-size: 15px; margin-top: 8px; max-width: 70ch; }
+
+  /* ===== DIRECTION BLOCK ===== */
+  .dir { padding: 48px 0; border-top: 1px solid var(--line); }
+  .dir-head { display: grid; grid-template-columns: 80px 1fr; gap: 24px; margin-bottom: 32px; align-items: start; }
+  .dir-num { font-family: var(--serif); font-style: italic; font-size: 56px; font-weight: 300; line-height: 1; color: var(--ink-3); }
+  .dir-name { font-family: var(--serif); font-size: 32px; font-weight: 500; color: var(--ink); line-height: 1.15; letter-spacing: -0.02em; }
+  .dir-bench { color: var(--accent-2); font-size: 13px; font-style: italic; margin-top: 8px; }
+  .dir-pan { display: grid; grid-template-columns: 1.1fr 1.1fr 1.2fr; gap: 0; margin: 0 0 28px 104px; background: rgba(22, 24, 29, 0.04); border: 1px solid var(--line); border-radius: 14px; overflow: hidden; }
+  .dir-pan > div { padding: 16px 22px; font-size: 13px; line-height: 1.65; color: var(--ink-2); border-right: 1px solid var(--line); }
+  .dir-pan > div:last-child { border-right: none; }
+  .dir-pan .pan-l { display: block; font-family: var(--sans); font-size: 10px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--ink-3); margin-bottom: 8px; }
+  .dir-pan b { color: var(--ink); font-weight: 600; }
+  .dir-tier { display: inline-block; font-family: var(--sans); font-size: 10px; letter-spacing: 0.15em; text-transform: uppercase; padding: 3px 10px; border-radius: 999px; margin-left: 12px; vertical-align: middle; }
+  .tier-1 { background: rgba(37, 99, 235, 0.15); color: var(--accent); }
+  .tier-2 { background: rgba(212, 175, 55, 0.15); color: var(--gold); }
+  .tier-3 { background: rgba(74, 124, 89, 0.15); color: var(--sage); }
+  .tier-4 { background: rgba(147, 51, 234, 0.14); color: #9333ea; }
+
+  .dir-product { margin-bottom: 32px; }
+  .dir-product-h { font-family: var(--sans); font-size: 11px; letter-spacing: 0.15em; text-transform: uppercase; color: var(--ink-3); margin-bottom: 12px; }
+  .dir-product-body { color: var(--ink-2); font-size: 15px; line-height: 1.75; }
+  .dir-product-body ul { margin-top: 12px; padding-left: 20px; }
+  .dir-product-body li { margin-bottom: 6px; }
+  .dir-product-body b { color: var(--ink); font-weight: 500; }
+
+  /* ===== STAGES (3 columns) ===== */
+  .stages { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; background: var(--line); border: 1px solid var(--line); }
+  .stage { background: var(--bg); padding: 32px; display: flex; flex-direction: column; gap: 16px; }
+  .stage-h { font-family: var(--sans); font-size: 10px; letter-spacing: 0.15em; text-transform: uppercase; color: var(--ink-3); display: flex; justify-content: space-between; }
+  .stage-h .stage-time { color: var(--ink-2); }
+  .stage-h .stage-label { color: var(--ink); font-weight: 600; }
+  .stage-section { }
+  .stage-section-lbl { font-family: var(--sans); font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-3); margin-bottom: 6px; }
+  .stage-section-body { color: var(--ink-2); font-size: 13px; line-height: 1.65; }
+  .stage-section-body b { color: var(--ink); font-weight: 500; }
+  .stage-kr { padding: 12px 14px; background: rgba(37, 99, 235, 0.05); border-left: 2px solid var(--accent); color: var(--ink-2); font-size: 12px; line-height: 1.65; }
+  .stage-kr b { color: var(--accent); font-weight: 500; }
+  .stage-roi { color: var(--ink-3); font-size: 11px; line-height: 1.6; padding-top: 10px; border-top: 1px solid var(--line); }
+  .seg { padding: 3px 0; }
+  .seg + .seg { border-top: 1px dashed var(--line); margin-top: 5px; padding-top: 7px; }
+  .bench-line { padding: 1.5px 0; }
+  .li-seg { padding: 2px 0; }
+  .li-seg + .li-seg { border-top: 1px dotted var(--line); margin-top: 4px; padding-top: 4px; }
+  .caliber { margin: 18px auto 0; text-align: left; max-width: 880px; border-left: 2px solid var(--accent); padding-left: 18px; }
+  .caliber > div { padding: 3.5px 0; font-size: 13px; line-height: 1.65; color: var(--ink-2); opacity: .85; }
+  .caliber b { color: var(--ink); font-weight: 600; }
+
+  /* ===== REFERENCES (bottom) ===== */
+  .refs { padding: 100px 0 60px; background: var(--bg-2); margin-top: 100px; border-top: 1px solid var(--line); }
+  .refs-h { font-family: var(--serif); font-size: 32px; color: var(--ink); margin-bottom: 8px; font-weight: 500; }
+  .refs-h em { font-style: italic; color: var(--accent); font-weight: 300; }
+  .refs-sub { color: var(--ink-2); font-size: 14px; margin-bottom: 40px; }
+  .ref-list { display: flex; flex-direction: column; gap: 1px; background: var(--line); border: 1px solid var(--line); }
+  .ref-item { background: var(--bg); padding: 14px 20px; display: grid; grid-template-columns: 60px 1fr; gap: 16px; align-items: start; font-size: 12px; line-height: 1.5; }
+  .ref-num { font-family: var(--serif); font-style: italic; font-size: 16px; color: var(--ink-3); }
+  .ref-num .ref-tier { font-family: var(--sans); font-style: normal; font-size: 9px; display: block; margin-top: 2px; letter-spacing: 0.1em; text-transform: uppercase; }
+  .ref-tier.t-hard { color: var(--sage); }
+  .ref-tier.t-soft { color: var(--gold); }
+  .ref-tier.t-obs { color: var(--ink-3); }
+  .ref-content b { color: var(--ink); font-weight: 500; }
+  .ref-content a { color: var(--accent); text-decoration: none; word-break: break-all; }
+  .ref-content a:hover { color: var(--ink); }
+
+  footer { padding: 40px 0; color: var(--ink-3); font-size: 11px; border-top: 1px solid var(--line); }
+
+  @media (max-width: 980px) {
+    .container { padding: 0 24px; }
+    .stages { grid-template-columns: 1fr; }
+    .dir-head { grid-template-columns: 1fr; gap: 12px; }
+    .dir-pan { grid-template-columns: 1fr; margin-left: 0; }
+    .dir-pan > div { border-right: none; border-bottom: 1px solid var(--line); }
+    .dir-pan > div:last-child { border-bottom: none; }
+    .dir-num { font-size: 40px; }
+    .dir-name { font-size: 24px; }
+    nav.glass { left: 16px; right: 16px; transform: none; width: auto; }
+  }
+</style>
+</head>
+<body>
+<div class="bg-grain"></div>
+
+<nav class="glass">
+  <div class="logo">知乎<span>·</span>AI 产品规划</div>
+  <a href="#tier-1">主攻</a>
+  <a href="#tier-2">加速</a>
+  <a href="#tier-3">配套</a>
+  <a href="#risk">风险</a>
+  <a href="#refs">引用</a>
+</nav>
+
+<main>
+  <div class="container">
+
+    <!-- ===== HERO (minimal) ===== -->
+    <section class="hero">
+      <div class="caliber">
+      <div><b>口径(2026.10.10 重构)</b>：原 16 方向按耦合关系收敛为 6 条线</div>
+      <div>· L1 内容多形态(原 E3+N7) · L2 互动内容(原 N2+E2+N16) · L3 答主资产化(原 N4+N11+N13①)</div>
+      <div>· L4 Ask 化+原生供给(原 N1+N8) · L5 创作引擎(原 N5+N13②+N12+N14,一套引擎四个门面) · L6 大学生增长配套(原 N10 重构)</div>
+      <div><b>已裁剪</b>：出海(N6/E6)、短剧管线(E1)、模板跟拍(N3)、数字人直播(N9)、小游戏(N15)、商业化组件(E5)——引文保留供对照</div>
+      <div><b>总账</b>：2028E 六线合计基准约 <b>7~10 亿</b>(L1 1.3~1.5 + L2 2.5~3.5 + L3 1.3~2.5 + L5 直接 0.6~1.4;间接与降本归各线,不重复相加)</div>
+      <div><b>答主侧生态</b>：平台每收 1 元,创作者侧流出约 1.5~3 元(L3 分成 0.7~1.4 亿/年)</div>
+      <div><b>投入与盈亏平衡</b>：六线累计投入约 2.5~4 亿(占现金储备 44.5 亿的 6~9%),2027E 末~2028E 初 EBITDA 转正</div>
+      <div><b>内部数仓实捞(2026.10.10)</b>：ODAU 同比 -14%~-16%<a href="#ref-79" class="cite">[79]</a>、新增提问 -25%/两月<a href="#ref-80" class="cite">[80]</a>——情景区间接类 ×0.92,基准降至 6.4~9.2 亿;C4+ 仅 2.45 万人<a href="#ref-82" class="cite">[82]</a>,L3 分身中期目标校准 3000~5000;详见「风险」区</div>
+    </div>
+    </section>
+
+    <!-- ===== TIER 1 ===== -->
+    <div class="tier-head" id="tier-1">
+      <div class="tier-label">Tier 1 · 主攻</div>
+      <div class="tier-title">三条主攻线,<em>直接钱+最快新钱</em></div>
+      <div class="tier-sub">L1 多形态(投入最小)、L2 互动内容(全盘最大线)、L3 答主资产化(唯一直接现金牛)。原 N/E 编号在线内以「融合自」标注,引文不丢。</div>
+    </div>
+
+    <div id="dirGrid"></div>
+
+    <!-- ===== TIER 2 ===== -->
+    <div class="tier-head" id="tier-2">
+      <div class="tier-label">Tier 2 · 加速</div>
+      <div class="tier-title">基建线,<em>一份投入多处收钱</em></div>
+      <div class="tier-sub">L4 守提问入口(收益间接)、L5 创作引擎是 L2 影游与 L6 校园的共同底座——引擎只建一次。</div>
+    </div>
+
+    <div id="dirGrid2"></div>
+
+    <!-- ===== TIER 3 ===== -->
+    <div class="tier-head" id="tier-3">
+      <div class="tier-label">Tier 3 · 长线</div>
+      <div class="tier-title">大学生,<em>第一批用户而非产品</em></div>
+      <div class="tier-sub">L6 重构为配套层：创作者/DAU/付费/留存指标全部归 L1–L5,本线只做认证+大使+招聘联动,配套资源 ≤500 万/年。</div>
+    </div>
+
+    <div id="dirGrid3"></div>
+
+    <!-- ===== 现状与风险（内部数仓实测） ===== -->
+    <div class="tier-head" id="risk">
+      <div class="tier-label">Reality Check · 内部数仓实捞(2026.10.10)</div>
+      <div class="tier-title">现状在收缩,<em>风险全部挂线</em></div>
+      <div class="tier-sub">以下全部为 sql-gateway 数仓实捞（非财报口径），同星期对齐采样消除周内波动。BP 的每一条间接收益公式里，大盘系数正在往下走。</div>
+    </div>
+
+    <style>
+      .risk-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:18px;margin:26px 0 8px}
+      .risk-card{border:1px solid var(--line-2);border-radius:12px;padding:22px 24px;background:var(--bg-2)}
+      .risk-card .rc-id{font-family:var(--sans);font-size:11px;letter-spacing:.15em;text-transform:uppercase;color:var(--rose);font-weight:600}
+      .risk-card h4{font-family:var(--serif);font-size:19px;font-weight:600;color:var(--ink);margin:6px 0 10px}
+      .risk-card p{font-size:13.5px;line-height:1.65;color:var(--ink-2);margin:0}
+      .risk-card .fix{margin-top:12px;padding-top:10px;border-top:1px dashed var(--line-2);font-size:12.5px;color:var(--ink)}
+      .risk-card .fix b{color:var(--accent)}
+      .data-strip{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin:22px 0}
+      .ds{border:1px solid var(--line-2);border-radius:10px;padding:16px 14px;text-align:center;background:var(--bg)}
+      .ds .num{font-family:var(--sans);font-size:26px;font-weight:700;color:var(--rose);letter-spacing:-.02em}
+      .ds .num.up{color:var(--sage)}
+      .ds .lab{font-size:12px;color:var(--ink-2);margin-top:6px;line-height:1.4}
+      @media(max-width:860px){.risk-grid,.data-strip{grid-template-columns:1fr 1fr}}
+    </style>
+
+    <div class="data-strip">
+      <div class="ds"><div class="num">-15%</div><div class="lab">ODAU 同比(同星期五组对齐)<a href="#ref-79" class="cite">[79]</a></div></div>
+      <div class="ds"><div class="num">-25%</div><div class="lab">日新增提问·两月(需求入口分流最陡信号)<a href="#ref-80" class="cite">[80]</a></div></div>
+      <div class="ds"><div class="num">2.5%</div><div class="lab">AI 编辑器作者渗透·横盘两月(现状 AI 失败实证)<a href="#ref-81" class="cite">[81]</a></div></div>
+      <div class="ds"><div class="num up">2.45 万</div><div class="lab">C4+ 头部创作者规模·稳定不流失(资产池没缩)<a href="#ref-82" class="cite">[82]</a></div></div>
+    </div>
+
+    <div class="risk-grid">
+      <div class="risk-card"><div class="rc-id">R1 · 挂 L1/L2/L4</div><h4>基本盘下滑侵蚀全部间接收益</h4>
+        <p>ODAU 同比 -14%~-16% 且同星期五组全为负,不是季节性<a href="#ref-79" class="cite">[79]</a>。L1/L2/L4 的「时长→广告归因」全按 8000 万 MAU 静态盘测算,系数若按 -5%~-8%/年走,间接类要折价。</p>
+        <div class="fix"><b>修模:</b>总账加「大盘下行情景」——间接类 ×0.92,基准 7~10 亿 → <b>6.4~9.2 亿</b>;直接现金牛 L3 优先级再上调。</div></div>
+      <div class="risk-card"><div class="rc-id">R2 · 挂 L3/L4(战略前提级)</div><h4>提问入口被外部 AI 实质分流</h4>
+        <p>新增提问两月 -25%(需求跌得比供给快)<a href="#ref-80" class="cite">[80]</a>——豆包 2.27 亿 MAU<a href="#ref-60" class="cite">[60]</a>接走的是「发起问题」这个动作本身。L4 从战略口号变成止血动作。</p>
+        <div class="fix"><b>应答:</b>站内 Ask 化挽留发起动作(L4)+ 分身对外入驻豆包/Coze 去流量所在地卖答案(L3)——两线合讲才是完整方案,此数据作 L4+L3 立项第一段。</div></div>
+      <div class="risk-card"><div class="rc-id">R3 · 挂 L3</div><h4>资产池只有 2.45 万人,中期目标虚高</h4>
+        <p>数仓实测 C4+ = C4 19,216 + C5 5,306 = <b>24,506 人</b><a href="#ref-82" class="cite">[82]</a>,原中期 KR「授权分身 1 万」= 头部 41% 不现实;「15 万专家」是累计认证口径非活跃头部。</p>
+        <div class="fix"><b>校准:</b>分身授权中期目标改 <b>3000~5000</b>(C4+ 12~20%)或放宽定义至 C3+;订阅测算 0.1~0.2 亿 → 0.03~0.08 亿,缺口由语料/授权侧补——L3 线 1.3~2.5 亿总口径不变、结构调权重。</div></div>
+      <div class="risk-card"><div class="rc-id">R4 · 挂 L5(KR 合理性)</div><h4>2.5% 横盘 = 功能按钮路线已证伪</h4>
+        <p>编辑器 AI 渗透率两月纹丝不动 2.5%、促产回答占比 4.8% 不涨<a href="#ref-81" class="cite obs">[81]</a><a href="#ref-80" class="cite obs">[80]</a>——「加个 AI 按钮」没进工作流。L5 短期 KR「Agent 创作占比 ≥10%」隐含 4 倍跳变,评审必问。</p>
+        <div class="fix"><b>反证:</b>正因为现状 AI 失败才要引擎级重构(选题→核查→成稿整段接管),不是功能级修补;促产天花板(平台代产)与答主调用(Agent)是两种模式——此条数据反而强化 L5 立项。</div></div>
+      <div class="risk-card"><div class="rc-id">R5 · 挂全 BP 收益侧</div><h4>收入数据权限缺口,BP 有裸系数</h4>
+        <p>设备 ROI 宽表(30/365 日知识会员收入)无读权限(HTTP 400 实测)<a href="#ref-83" class="cite obs">[83]</a>——全部收益数字目前只锚外部财报(27.5 亿营收/1220 万会员),「~126 元摊值」类系数均为推算。</p>
+        <div class="fix"><b>行动:</b>成稿前申请 table 331934,用真实 ARPPU/LTV 替换摊值;当前版本所有摊值系数标注「财报推算」。</div></div>
+      <div class="risk-card"><div class="rc-id">R6+R7 · 运营节奏/机会面</div><h4>假期供给比用户脆弱;但头部没跑</h4>
+        <p>十一 ODAU 仅 -5%<a href="#ref-79" class="cite obs">[79]</a>而创作作者 -25%<a href="#ref-81" class="cite obs">[81]</a>——用户照来、答主停工。同时 C4+ 规模两月稳定、存量回答 6.44 亿仍净增<a href="#ref-82" class="cite obs">[82]</a><a href="#ref-80" class="cite obs">[80]</a>:原料池没缩。</p>
+        <div class="fix"><b>设计:</b>L2/L6 供给管线配「假期存量自动补位」(L5 HTML 引擎批量编译旧内容即为此准备);<b>排序依据:</b>存量变现(L3/L5)优先于增量拉新(L6)是数据支持的,不是偏好。</div></div>
+    </div>
+
+
+    <!-- ===== REFERENCES ===== -->
+    <section class="refs" id="refs">
+      <div class="kicker">The References</div>
+      <h2 class="refs-h">行内 <em>[n]</em> 引用源</h2>
+      <p class="refs-sub">每个 [n] 对应一条引用,标【硬】= 公开财报/官方、【测算】= 权威媒体、【观察】= 行业评论。部分引用(出海/短剧/直播/小游戏)属已裁剪方向,保留供枚举对照。</p>
+      <div class="ref-list" id="refList"></div>
+    </section>
+
+    <footer>知乎 AI 方向 × 产品规划 · 2026 Q4 · 内部 BP 用</footer>
+
+  </div>
+</main>
+
+<script>
+// ===== REFERENCES =====
+const refs = [
+  { n: 1, tier: 'hard', text: '知乎 2025 全年营收 27.5 亿(-23.6%)、Non-GAAP 净利 3790 万(首年盈利)、直答 MAU +260%、次月留存 +83%、日均新增高质量内容 +20%', url: 'https://www.ceweekly.cn/company/2026/0327/491588.html', label: '经济日报 2026.03.27' },
+  { n: 2, tier: 'hard', text: '知乎 2025 Q4 IP 版权 +5 倍、版权收益作者规模 +6 倍、会员 1220 万、现金 44.5 亿、营销服务 Q4 环比 +24%', url: 'https://economy.southcn.com/node_cc06cbe708/bdaca48399.shtml', label: '南方经济 2026.03.25' },
+  { n: 3, tier: 'soft', text: '知乎 MAU 约 8000 万(从 2021Q4 1.03 亿回落,官方停止披露);30 岁以下 73.2%、女性 59.6%', url: 'https://www.lanjingkong.com', label: '蓝鲸财经 2026.01' },
+  { n: 4, tier: 'hard', text: '知乎专家网络 15 万、覆盖 1.5 万垂直领域;创作者 8030 万、累计内容 9.539 亿', url: 'http://scitech.ce.cn/sy/zx/202603/t20260325_2856270.shtml', label: '中国经济网 2026.03.25' },
+  { n: 5, tier: 'hard', text: '周源财报电话会:「2026 加速 AI 相关商业化探索,依托专家网络、可信内容资产、真实用户场景构建差异化护城河」', url: 'https://www.ceweekly.cn/company/2026/0327/491588.html', label: '经济日报' },
+  { n: 6, tier: 'hard', text: '知乎 2025 付费会员 15.39 亿(55.98%)、营销服务 8.44 亿(30.70%)、其他 3.66 亿(13.32%)', url: 'https://www.ceweekly.cn/company/2026/0327/491588.html', label: '经济日报' },
+  { n: 7, tier: 'hard', text: 'CNNIC 第 55 次报告:中国生成式 AI 用户 6.02 亿、渗透率 42.8%', url: 'https://www.cnnic.net.cn/', label: 'CNNIC 2025' },
+  { n: 8, tier: 'hard', text: '中国短视频用户 10.74 亿 / 95.4% 渗透率(CNNIC 2025 末)', url: 'https://www.ciw.news/p/chinas-ai-app-race-moves-into-feeds', label: 'China Innovation Watch 2026.09' },
+  { n: 9, tier: 'hard', text: '2026 H1 AI 短剧用户 6 亿、市场规模 220+ 亿元;2026 Q1 AI 微短剧占 95%', url: 'https://app.myzaker.com/news/article.php?pk=6ab4bce2b15ec0231e1da309', label: 'ZAKER' },
+  { n: 10, tier: 'hard', text: 'IDC 2025:AI 生成视频 20 亿条 / +14 倍;全球 Agent 市场 2030 年 22.16 亿美元', url: 'https://www.idc.com', label: 'IDC 2025' },
+  { n: 11, tier: 'hard', text: 'YouTube Ask 2025.06 Premium 限定上线;2025.12 月活 2000 万(YouTube CEO Neal Mohan 2026.01 确认)', url: 'https://startupfortune.com?p=8517/', label: 'Startup Fortune 2026.01' },
+  { n: 12, tier: 'hard', text: 'YouTube CEO Neal Mohan 2026.01:每天 100 万+ 频道用 AI 创作工具;Auto Dubbing 每天 600 万观众看翻译内容 ≥10 分钟', url: 'https://startupfortune.com?p=8517/', label: 'Neal Mohan 2026.01' },
+  { n: 13, tier: 'hard', text: 'Search Engine Land 2026:YouTube 占 Google AI Overviews 引用 29.5%,是第二大视频平台的 200 倍', url: 'https://startupfortune.com?p=8517/', label: 'Search Engine Land 2026' },
+  { n: 14, tier: 'hard', text: '百度慧播星数字人:双 11 83% 主播用过、GMV +91%、开播 +119%;数字人已为百度创造 5 亿营收', url: 'https://www.cnr.cn/tech/techph/20251113/t20251113_527428611.shtml', label: '央广网 2025.11.13' },
+  { n: 15, tier: 'hard', text: 'Meta AI Studio 2025.01 上线,US 一年创建数十万 AI 角色,跨 Instagram / Messenger / WhatsApp', url: 'https://www.snaplama.com/blog/how-to-create-ai-avatar-in-instagram-complete-2026-guide', label: 'Snaplama 2026' },
+  { n: 16, tier: 'hard', text: 'Meta AI Studio 强制 AI 标注 + 创作者边界设置(参考所有 AI 内容产品的合规范式)', url: 'https://particle.news/story/meta-launches-ai-studio-for-customizable-chatbots-on-instagram', label: 'Particle News 2025' },
+  { n: 17, tier: 'hard', text: '小红书 WAIC 2026.07:RED Skill 全量上线、7300 原创 Skill / 6 亿曝光 / 16 万 AI 开发者 +220% / 30 万创作者', url: 'https://k.sina.cn/article_7517400647_1c0126e4705908uy1y.html', label: '中国经营报 2026.07' },
+  { n: 18, tier: 'hard', text: '小红书 Vibe Coding 月 4-5 万件、讨论 160 万次;00 后黑客松 60% 入围', url: 'https://k.sina.cn/article_7517400647_1c0126e4705908uy1y.html', label: '中国经营报 2026.07' },
+  { n: 19, tier: 'hard', text: '抖音 AI 工坊 + 兴趣卡:34 个工具/Skill/模型、兴趣卡进 Feed 推荐流、10 万奖池 / 100 元/卡', url: 'https://zgeo.net/news/douyin-ai-workshop-app-distribution', label: 'GEO 行业门户 2026.09' },
+  { n: 20, tier: 'hard', text: 'B 站 Toy 内测:300 件作品 / 850 万体验;支持测试/小游戏/工具/模拟器', url: 'https://zgeo.net/news/douyin-ai-workshop-app-distribution', label: 'GEO 行业门户 2026.09' },
+  { n: 21, tier: 'hard', text: '字节 FORCE 大会 2025.11:Seedance 2.5;AI 版权商业化平台(周星驰电影官方授权二创模板首日破 10 万)', url: 'https://www.bytedance.com', label: '字节官方' },
+  { n: 22, tier: 'hard', text: '剪映 AI 新创作发布会 2026.09.20:剪映 Hub + 小映 + 剪映助手 Agent + 自定义 Skills + ICG Studio;CapCut 全球 6.6 亿用户 / 85+ AI 工具 / 60 亿条 AI 素材 / 700 万创作者日用', url: 'https://economy.gmw.cn/2026-09/21/content_39012958.htm', label: '光明网 2026.09.21' },
+  { n: 23, tier: 'hard', text: '百度世界大会 2025.11.13:文心 5.0(2.4 万亿参数);实时互动型数字人(2 秒反馈);GenFlow 3.0 用户 2000 万;萝卜快跑 1700 万次出行 / 22 城', url: 'https://www.news.cn/tech/20251113/9563c2ccb9ae479fa246b6df29fa855b/c.html', label: '新华网 2025.11.13' },
+  { n: 24, tier: 'hard', text: '腾讯 WorkRally 1.0(2025.10):开放 IP 库 + 剧本→分镜→角色→漫画→视频→配音→后期全链路 Agent', url: 'https://www.tencent.com', label: '腾讯 2025 财报' },
+  { n: 25, tier: 'obs', text: 'a16z 2026 Consumer AI 50:AI 分身被列为 2026 最被低估赛道;AI 创作者工具从「功能」升级为「创作者 OS」', url: 'https://a16z.com/100-gen-ai-consumer-apps/', label: 'a16z' },
+  { n: 26, tier: 'obs', text: 'Stratechery 2026.05「The AI Content Stack」:AI 不会让内容贬值,反而让可溯源、专业知识溢价更高', url: 'https://stratechery.com', label: 'Stratechery' },
+  { n: 27, tier: 'obs', text: '红杉中国 AI 地图 2026:中文 AI 创业者最稀缺:垂类数据 + 专家网络 + 合规授权', url: 'https://www.sequoiacap.com/zh-hant', label: '红杉中国' },
+  { n: 28, tier: 'hard', text: 'Meta AI Studio 数字人虚拟网红市场 2032 年 $1546 亿(参考 3x engagement of humans)', url: 'https://www.snaplama.com/blog/how-to-create-ai-avatar-in-instagram-complete-2026-guide', label: 'Snaplama 2026' },
+  { n: 29, tier: 'hard', text: 'NotebookLM 音频概览:源材料 → 双 AI 主持人对谈播客(Deep Dive/Debate/Critique 模式);Spotify Wrapped 2025 用了 NotebookLM', url: 'https://blog.google', label: 'Google 官方博客' },
+  { n: 30, tier: 'hard', text: 'OpenAI DevDay 2025.10:Apps in ChatGPT + AgentKit + Sora cameo + gpt-realtime 语音优先', url: 'https://openai.com/blog', label: 'OpenAI 官方' },
+  { n: 31, tier: 'hard', text: '字节 CapCut World 2026.09(新加坡):全球 6.6 亿用户 / 170+ 市场 / 30 种语言', url: 'https://aiproducthub.cn/newsflash/bytedance-jianying-launches-hub-xiaoying-ai-ultra-membership', label: 'AI产品库' },
+  { n: 32, tier: 'hard', text: '剪映 ICG Studio:AI 互动影游创作平台(剧本→分镜→剪辑全流程),内测中', url: 'https://baike.baidu.com/item/%E5%89%AA%E6%98%A0Hub/69134075', label: '百度百科' },
+  { n: 33, tier: 'hard', text: '剪映每年 1.5 亿元创作者激励 + 217 头部作者垂直 AI Skill + 首期 20+ 官方精品 Skill', url: 'https://aiproducthub.cn/newsflash/bytedance-jianying-launches-hub-xiaoying-ai-ultra-membership', label: 'AI产品库 2026.09' },
+  { n: 34, tier: 'obs', text: 'Web Summit 2025.11(里斯本):Reddit 创始人「AI 让社区从内容生产升级为知识沉淀」', url: 'https://websummit.com', label: 'Web Summit 2025' },
+  { n: 35, tier: 'obs', text: 'Gartner 2026:2027 年 30% 内容消费经 AI 中介', url: 'https://www.gartner.com', label: 'Gartner 2026' },
+  { n: 36, tier: 'hard', text: '抖音数字人服务 100 万+ 商家;快手数字人 50 万+ 商家', url: 'https://www.douyin.com', label: '抖音/快手官方' },
+  { n: 37, tier: 'obs', text: 'B 站 SBTI 人格测试 796 万人次试玩(updream 互动内容对标)', url: 'https://www.bilibili.com', label: 'B 站官方' },
+  { n: 38, tier: 'hard', text: 'YouTube Ask 2026.02 扩展到智能电视、游戏机、客厅屏', url: 'https://startupfortune.com?p=8517/', label: 'The Verge 2026.02' },
+  { n: 39, tier: 'obs', text: '36 氪 2026.07「知乎直答 Agent 化的产品哲学」', url: 'https://36kr.com', label: '36 氪' },
+  { n: 40, tier: 'hard', text: '《数据安全法》《个人信息保护法》:限制专家标注数据出境', url: 'http://www.cac.gov.cn', label: '国家网信办' },
+  { n: 41, tier: 'hard', text: '欧盟 AI Act 2024.08 生效:要求 AI 内容明确标注', url: 'https://artificialintelligenceact.eu', label: 'EU AI Act' },
+  { n: 42, tier: 'hard', text: 'OpenAI Sora cameo(2025.12):用户上传本人视频才能 cameo,规避侵权(分身项目授权范式)', url: 'https://openai.com/blog', label: 'OpenAI 官方' },
+  { n: 43, tier: 'hard', text: '知乎 2025 Non-GAAP 净利 3790 万,自 2024Q4 起连续 3 个季度盈利', url: 'https://economy.southcn.com/node_cc06cbe708/bdaca48399.shtml', label: '南方经济' },
+  { n: 44, tier: 'hard', text: 'B 站 updream:长期记忆 + 私人技能库 + 灵活画布(AI 视频三大能力)', url: 'https://www.bilibili.com', label: 'B 站官方' },
+  { n: 45, tier: 'obs', text: 'IDC 2026:AI 视频生成市场 2030 年达 200 亿美元', url: 'https://www.idc.com', label: 'IDC 2026' },
+  { n: 46, tier: 'soft', text: '番茄小说 DAU 2.45 亿、500 万创作者(字节生态 2025)', url: 'https://www.bytedance.com', label: '字节生态 2025' },
+  { n: 47, tier: 'soft', text: '小红书 MAU 3.12–3.5 亿、73% Z 世代(QuestMobile,口径不一)', url: 'https://www.questmobile.com.cn', label: 'QuestMobile' },
+  { n: 48, tier: 'obs', text: 'IDC FutureScape 2026:2028 年 40% 企业把 AI Agent 集成到核心业务流程', url: 'https://www.idc.com', label: 'IDC' },
+  { n: 49, tier: 'obs', text: 'CNNIC 2025:68% 用户对 AI 生成内容存疑(内容真实性风险)', url: 'https://www.cnnic.net.cn/', label: 'CNNIC 2025' },
+  { n: 50, tier: 'hard', text: '百度搜索首条结果富媒体化覆盖率 70%;625 家厂商接入百度搜索 API', url: 'https://www.cnr.cn/tech/techph/20251113/t20251113_527428611.shtml', label: '央广网 2025.11' },
+  { n: 51, tier: 'soft', text: '中国知识付费市场 2025E 2808.8 亿元 / 用户 6.4 亿;教培占比 45%、25-35 岁主力 60%+、创作者行业 2026E 2800 亿+', url: 'https://tech.cnr.cn/techyw/kan/20250221/t20250221_527077558.shtml', label: '央广网/消费日报 2025.02(预期口径)' },
+  { n: 52, tier: 'hard', text: 'CNNIC 第 57 次报告:微短剧用户 6.64 亿、占网民 59.0%(2025.12)', url: 'https://www.cnnic.net.cn/', label: 'CNNIC 2025.12' },
+  { n: 53, tier: 'hard', text: '《中国数字人发展报告(2024)》:2025E 核心市场 480.6 亿 / 带动产业 6402.7 亿', url: 'https://finance.people.com.cn/BIG5/n1/2025/0228/c1004-40427725.html', label: '人民日报 2025.02.28' },
+  { n: 54, tier: 'soft', text: '前瞻:2025 虚拟主播市场 120 亿 / 用户 7.5 亿 / Z 世代占比 60%+;娱乐直播 60% + 电商带货 25% 份额结构', url: 'https://www.sgpjbg.com/searchtag/26361244.html', label: '前瞻产业研究院 2026' },
+  { n: 55, tier: 'hard', text: '亿欧智库:中国 AI 语料市场 2023 年 68.7 亿 → 2025E 109 亿(CAGR 25%+);国际主流模型中文语料占比不足千分之一(注:仅指国际模型,国内模型中文占比已 60-80%)', url: 'https://www.ijiangshi.com', label: '亿欧智库 2025' },
+  { n: 56, tier: 'hard', text: '全球 AI 训练数据集市场 2025 年 $87.4 亿 → 2031 年 $498.2 亿(CAGR 33.14%);文本数据占 46.53%', url: 'https://www.sgpjbg.com.cn/labels/damoxingxunlianshujuxingyebaogao/2/7221067.html', label: '三个皮匠(Mordor 口径) 2025' },
+  { n: 57, tier: 'hard', text: '京东云数字人:成本约真人 1/10、7×24 开播、转化 +30%、超 80% 真人主播;麦肯锡测算 8h/日场景 AI 主播年成本低 $76 万', url: 'https://news.hubeidaily.net/pc/c_4180941.html', label: '湖北日报/证券时报 2025-2026' },
+  { n: 58, tier: 'hard', text: '广电总局《2026 中国网络音频发展报告》(首份官方):有声阅读 6.17 亿、音频付费 1.88 亿、播客 1.5 亿、市场 337 亿/年;通勤/家务/睡眠场景使用率 >30%', url: 'https://www.nrta.gov.cn/', label: '广电总局 2026' },
+  { n: 59, tier: 'hard', text: '国家数据局:全国高质量数据集 12 万+/1565PB(2026.06);数据交易机构挂牌高质量数据集累计成交近 40 亿元;北京数交所高质量数据集占比 10%→近 80%', url: 'https://politics.rmlt.com.cn/2025/0816/737813.shtml', label: '国新办发布会/人民论坛 2025.08' },
+  { n: 60, tier: 'hard', text: 'QuestMobile《2025 中国移动互联网年度大报告》：豆包 2025Q4 MAU 2.27 亿、国内首个日活破亿 AI 原生 App；30 日留存 44.5%（第二名 Kimi 32.1%）；移动端 AI 应用月活 7.22 亿', url: 'http://www.chinahightech.com/yaowen/2026-03/23/content_490800.html', label: 'QuestMobile/中国高新网 2026.03' },
+  { n: 61, tier: 'hard', text: '快手 IR 2026.01 + SCMP 2026.05：可灵 6000 万创作者 / 6 亿+ 生成视频 / ARR 近 $500M；2026Q1 收入同比 +300% 约 6.5 亿元', url: 'https://aibusinessweekly.net/p/ai-video-statistics', label: '可灵披露/aibusinessweekly 2026' },
+  { n: 62, tier: 'hard', text: 'AI in China 2026.07 + 三个皮匠：Seedance 企业 ARR $20 亿、即梦 2026Q1 MAU 1352.5 万、中国 AI 视频 2026E $80~100 亿、微短剧 AI 生成占比 ~40%、市场 $50 亿→$120 亿', url: 'https://www.ainchina.com/blog/china-ai-video-revolution-seedance-sora-2026', label: 'AIinChina/三个皮匠 2026.07' },
+  { n: 63, tier: 'hard', text: '娱乐资本论 2026.07：可灵 3.0 Omni ≈0.43 元/秒、即梦 Seedance VIP ≈1.38 元/秒；Sora 2026.03 关停；社媒视频制作成本 -99%（$500–2000→$5–20）', url: 'https://news.qq.com/rain/a/20260714A0C0A200', label: '腾讯新闻/娱乐资本论 2026.07' },
+  { n: 64, tier: 'soft', text: '小红书 RED Skill 笔记内挂载 + OpenAI Apps in ChatGPT（卡片即应用）——发布会/内测产品形态（同数据底座 v2）；Coze 2025.08 智能体按 Token 消耗分成', url: 'https://www.nbd.com.cn/articles/2026-02-08/4253745.html', label: '发布会形态/每经 2026.02' },
+  { n: 65, tier: 'hard', text: 'Lovable 2 个月 $20M ARR（欧洲最快）、2025.12 $200M ARR + $66 亿估值；Bolt.new 6 个月 $40M ARR；定价 $20~25/月', url: 'https://www.morphllm.com/best-vibe-coding-tools', label: 'Morph/NxCode 汇编 2026' },
+  { n: 66, tier: 'hard', text: 'Gartner：2026 年底 75% 新应用由低代码/无代码构建（2020 <25%）；Karpathy 2025.02 提出 vibe coding，入选柯林斯年度词汇', url: 'https://catdoes.com/blog/best-ai-app-builder', label: 'Gartner/CatDoes/Dev.to 2026' },
+  { n: 67, tier: 'obs', text: 'TRAE 社区求职作品秀：开发者 2 个月做出 80+ 页面作品集站「拾光小站」，「以前面试靠讲，现在面试靠点」', url: 'https://forum.trae.cn/t/topic/182044/1', label: 'TRAE 官方社区 2026' },
+  { n: 68, tier: 'obs', text: 'Bruno Simon 3D 可驾驶作品集获数十家媒体报道；Wegic：≥3 条评价的作品集联系表单提交 +47%；Framer 作品集案例研究', url: 'https://wegic.ai/zh-hk/blog/personal-portfolio.html', label: 'Wegic/Hostinger/Templyo' },
+  { n: 69, tier: 'obs', text: 'Claude Opus 5/5.5：单 prompt 生成可玩 3D 游戏/世界（几何/纹理/物理/音乐全程序化、单 HTML 运行）；Opus 5.5 2026.09.22；社区验证非基准', url: 'https://courionai.com/news/2026-08-03-opus-5-prompt-to-game-3d', label: 'The Decoder/Courion 2026.08' },
+  { n: 70, tier: 'obs', text: 'Claude Opus 5.5 + Higgsfield MCP 生成可交互 3D「亚历山大图书馆」浏览器世界（image-to-3D + 导览 + 光照）；Meshy text-to-3D 导出 .glb', url: 'https://www.developersdigest.tech/blog/claude-opus-5-5-3d-world-higgsfield-mcp', label: 'Developers Digest 2026' },
+  { n: 71, tier: 'hard', text: '游戏工委《2025 中国游戏产业报告》：小程序游戏 535.4 亿 +34.4%、内购 68.1%；QuestMobile：微信小游戏 MAU 5.71 亿（51.5%）/抖音 1.71 亿；40 万开发者、300+ 款单季流水破千万（80% <30 人团队）；2027E 破千亿', url: 'https://www.sgpjbg.com.cn/news/7030146.html', label: '游戏工委/QuestMobile 2026' },
+  { n: 72, tier: 'soft', text: '三个皮匠：AI 生成素材成本 <1/10；零基础开发者 Cocos+DeepSeek 1 小时完成玩法原型；火山引擎小游戏 AI 全链路方案', url: 'https://www.sgpjbg.com.cn/news/7030146.html', label: '三个皮匠 2026' },
+  { n: 73, tier: 'soft', text: 'ZVZO 2026：AI NPC 小游戏渗透率 2024 7%→2025 34%；混合变现占比 71%（口径存差异仅取趋势）', url: 'https://www.zvzo.com/2235/view-73298-1.html', label: 'ZVZO 2026' },
+  { n: 74, tier: 'hard', text: '剪映「AI 新创作发布会」2026.09.20（抖音创作者大会）：发布剪映 Hub/小映，首次亮相 AI 互动影游创作平台 ICG Studio（限量内测）——STORIES, MADE PLAYABLE，AI 短剧生成+分支叙事结合，主线与抉择点后自动补全多分支剧情/风格统一视觉资产/分镜并组合为可运行影游；每年 1.5 亿元创作者激励', url: 'https://baike.baidu.com/item/ICG%20Studio/69157695', label: '剪映发布会/百科 2026.09' },
+  { n: 75, tier: 'hard', text: '广电总局 2026 年 9 月全国电视剧（网络剧）备案公示：互动剧作为全新独立类别首次出现，纳入常态化管理体系', url: 'https://baike.baidu.com/item/ICG%20Studio/69157695', label: '广电总局备案 2026.09' },
+  { n: 76, tier: 'hard', text: '互动影游市场：全球 2025 约 20.6 亿美元（≈140 亿元）→ 2032 53.4 亿美元（CAGR 14.8%，环洋）；恒州诚思口径 2025 144.7 亿元→2032 约 364.4 亿元', url: 'https://m.cnfin.com/hg-lb//zixun/20260625/4431533_1.html', label: '环洋/恒州诚思 2026' },
+  { n: 77, tier: 'hard', text: '《盛世天下·女帝篇》上线 5 天破 100 万/12 天破 200 万套、单款全年或破 300 万套（2023《完蛋！》破圈用时超一个月）；DataEye：2026 国内真人互动影游 18~20 亿元、赛道开发度不足 10%', url: 'https://m.cnfin.com/hg-lb//zixun/20260625/4431533_1.html', label: 'DataEye/新华财经 2026.06' },
+  { n: 78, tier: 'soft', text: '伽马数据《2026 中国游戏产业趋势报告》：超 70% 头部游戏公司已布局 AI 互动内容、2027 年 AI 互动影游市场预计破 300 亿元；腾讯光子「造化工坊」已上线数十款、网易「易影」、字节游戏《不问凡尘》', url: 'https://lmtw.com/mzw/content/detail/id/255405/keyword_id/-1', label: '伽马数据/流媒体网 2026' },
+  { n: 79, tier: 'hard', text: '【内部数仓】全站 ODAU(dws_growth_client_odau_info_pd, is_odau=1)同星期对齐五组:2025 年 1067/1069/1014/993/960 万 → 2026 年同期 913/905/846/867/843 万,<b>同比 -14%~-16%</b>;2026 年 8 月上旬 913~919 万 → 10 月上旬 843~847 万', url: '#ref-79', label: 'sql-gateway 实捞 2026.10.10 · query 9540128/9540146' },
+  { n: 80, tier: 'hard', text: '【内部数仓】日新增有效回答 13.51 万(08-04)→12.92 万(09-08)→11.88 万(09-29)(-9%/两月);<b>日新增提问 1.40 万→1.00 万(-25%)</b>;存量回答 6.390→6.443 亿仍净增;AI 运营促产回答 6655→5930 条/日,占新增 4.9%→4.8% 不涨', url: '#ref-80', label: 'sql-gateway dws_content_core_wide_pt · query 9539965/9540018/9540054' },
+  { n: 81, tier: 'hard', text: '【内部数仓】日创作作者数 14.05 万→12.89 万(-8%);<b>AI 编辑器作者渗透率 2.50%→2.65% 横盘</b>(3515→3414 人)——功能按钮式 AI 未进创作工作流', url: '#ref-81', label: 'sql-gateway dws_author_core_wide_pt · query 9540052' },
+  { n: 82, tier: 'hard', text: '【内部数仓】c_level 实测(2026-10-07):<b>C4 19,216 人 + C5 5,306 人 = C4+ 全网 2.45 万</b>;C3 46.6 万;两个月 C4+ 24,210→24,444 稳定不流失——头部没跑,萎缩的是增量与需求', url: '#ref-82', label: 'sql-gateway dws_author_core_wide_pt · query 9539921/9539951' },
+  { n: 83, tier: 'obs', text: '【内部权限缺口】设备 ROI 宽表(kno_income30/365 日知识会员收入)当前账号无读权限(HTTP 400 实测)——BP 收益侧全部锚外部财报口径,成稿前需申请 table 331934', url: '#ref-83', label: 'data.in.zhihu.com 权限探测 2026.10.10' }
+];
+
+const refList = document.getElementById('refList');
+refs.forEach(r => {
+  const item = document.createElement('div');
+  item.className = 'ref-item';
+  item.id = 'ref-' + r.n;
+  item.innerHTML = `<div class="ref-num">[${r.n}]<span class="ref-tier t-${r.tier}">${r.tier === 'hard' ? '【硬】' : r.tier === 'soft' ? '【测算】' : '【观察】'}</span></div><div class="ref-content">${r.text}<br><a href="${r.url}" target="_blank" style="font-size:11px; font-family:var(--sans);">${r.label} →</a></div>`;
+  refList.appendChild(item);
+});
+
+// ===== 11 DIRECTIONS =====
+// ===== 6 LINES (2026.10.10 重构·全量融合版) =====
+const directions = [
+  // ===== TIER 1: 主攻 =====
+  {
+    n: 'L1', tier: 'tier-1', name: '内容多形态（听·看·读一键三态）', bench: '对标 NotebookLM 一源多模态 <a href="#ref-29" class="cite" data-tip="Google 官方博客">[29]</a> · 百度一镜数字人对谈 <a href="#ref-14" class="cite" data-tip="央广网 2025.11">[14]</a> · Spotify Wrapped 2025 用 NotebookLM <a href="#ref-29" class="cite">[29]</a> · 自有已验证:AI 播客已上线/AI 漫剧《瑶灼雪恨》破亿播放',
+    pan: { user: '通勤/家务/睡眠三场景:<b>有声阅读 6.17 亿</b>、音频付费 1.88 亿、播客 1.5 亿,使用率均 >30%<a href="#ref-58" class="cite">[58]</a>——知乎当前零供给时段', tam: '音频 <b>337 亿/年</b><a href="#ref-58" class="cite">[58]</a>内「知识音频+一源多态」切片,不做泛娱乐有声', rev: '2028E <b>1.3~1.5 亿/年</b>(音频消费 1 亿+一源多态降本 0.3~0.5 亿) ｜<b>答主侧</b> 一源多播增量稿费≈降本折现 ' },
+    product: `<ul>
+      <li><b>「听」按钮（最先上线）</b> 盐选故事/高赞长页标题下方加「▶ 听这篇文章 · 12 分钟」胶囊,点击底部滑出播放器:后台播放、四档调速、声音两选(标准 TTS / <b>答主授权克隆音色</b>「用梁宁的声音讲这篇」);通勤时段首页信息流长文自动挂耳机角标。形态对标 NotebookLM「一份文档→一期播客」<a href="#ref-29" class="cite">[29]</a>,TTS 走 API 采购不自建</li>
+      <li><b>一篇文章转多个形态（一源多态工厂,原 N7）</b> 答主管理页每条内容下加「生成其他形态」:一键转出播客/讲解视频/漫剧预告,各成独立条目、消费跳回原文;source-grounded RAG 压幻觉(所有形态只从原文取材)<a href="#ref-29" class="cite">[29]</a>;已验证:知乎 AI 播客已上线、AI 漫剧破亿播放</li>
+      <li><b>数字人对谈栏目</b> 两个数字人(形象复用 L3 分身资产)就争议话题对谈出视频播客,对标百度一镜<a href="#ref-14" class="cite">[14]</a>;栏目化运营 ≥10 档</li>
+    </ul>`,
+    short: { feat: '策略=「两周拿数据,不建系统」:Top 1% 盐选故事+高赞长文离线 TTS 预生成,信息流「听」入口灰度 10% 用户;不开推广,只看自然数据定去留',
+      kr: 'KR1 音频消费时长 +20%;KR2 通勤时段(7-9/18-20 点)渗透 ≥5%;KR3 TTS 单条边际成本趋 0',
+      roi: '1 算法+1 端+API,全案投入最小;<b>本阶段测算</b>:音频化成本≈0,时长增量广告归因 0.3~0.5 亿/年起步<a href="#ref-58" class="cite">[58]</a>;验证期以「知乎用户听不听知乎」为唯一问题' },
+    mid: { feat: '策略=「工厂化」:高赞回答→播客/漫剧/视频自动管线全量开放(答主一键触发);数字人对谈栏目 10 档上线;漫剧形态同时给 L2 互动线供素材',
+      kr: 'KR1 收听 DAU 破 500 万、人均音频时长 ≥25 分钟/日(E3 原案);KR2 视频 GMV +30%、单条成本 <¥500;KR3 音频直接收入(会员增量+定制)年化 ≥1 亿',
+      roi: '同一部小说,读过的人再付费听一遍——盐言 IP 免费二次变现;<b>本阶段测算</b>:一源多态替代重复制作,累计节约 ≈0.3 亿/年(原 N7 口径,大头分发收入归 L2/L3 不重复)' },
+    long: { feat: '全形态自动化内容工厂+IP 矩阵化(盐言+漫剧+互动同一 IP 多形态流转);下游改编授权收入归 L3 计费',
+      kr: 'KR1 IP 衍生 GMV ≥10 亿(对标字节周星驰案例<a href="#ref-21" class="cite obs">[21]</a>);KR2 PGC 占比 ≥25%',
+      roi: '<b>本阶段测算</b>:线收敛 1.3~1.5 亿/年(知乎 IP 版权 Q4 +5 倍增速背书<a href="#ref-2" class="cite">[2]</a>)' }
+  },
+  {
+    n: 'L2', tier: 'tier-1', name: '互动内容（知识卡→角色→影游）', bench: '对标抖音 AI 工坊+兴趣卡 <a href="#ref-19" class="cite" data-tip="GEO 2026.09">[19]</a> · B 站 Toy 850 万人次 <a href="#ref-20" class="cite">[20]</a> · 小红书 RED Skill <a href="#ref-17" class="cite" data-tip="中国经营报 2026.07">[17]</a> · Character.AI 1800 万自创角色 <a href="#ref-25" class="cite obs">[25]</a> · Zeta 多角色剧情周活 130 万/人均 16h · 星野/猫箱 25 元包月(2.5 亿下载) · 剪映 ICG Studio <a href="#ref-74" class="cite">[74]</a>',
+    pan: { user: 'Z 世代(虚拟内容用户 7.5 亿中占比 60%+<a href="#ref-54" class="cite soft">[54]</a>)+ 在校大学生 4000 万+(经 L6 落地)+ 盐言古言/悬疑年轻女性读者;SBTI 式裂变人群<a href="#ref-37" class="cite obs">[37]</a>', tam: '终局盘=互动影游全球 140 亿→363 亿元(CAGR 14.8%)<a href="#ref-76" class="cite">[76]</a>,国内开发度不足 10%<a href="#ref-77" class="cite">[77]</a>;当前需求验证=B 站 Toy 850 万人次<a href="#ref-20" class="cite">[20]</a>、抖音兴趣卡进首页 Feed<a href="#ref-19" class="cite">[19]</a>', rev: '2028E <b>2.5~3.5 亿/年</b>(知识卡+角色订阅 1.8 亿基准+影游 0.6~1.2 亿)+ 年轻化时长 ｜<b>答主侧</b> 互动卡分成头部 +¥50~100/月(平台抽 15~30%)、角色按被使用分成 ' },
+    product: `<ul>
+      <li><b>知识卡（短期,融合原 N2）</b> 首页信息流里直接出现「能玩的卡」:「考研模拟器」选学校+每天学时→当场出上岸概率;「合同风险体检」贴条款→当场标风险句;「职业规划决策树」答 3 题→给路径——<b>卡片内完成,全程不跳转</b><a href="#ref-19" class="cite">[19]</a>。配套创作工具「知乎 AI 工坊」三栏界面(技能/资源/项目库+自然语言创作区+实时预览发布区),对标抖音工坊原貌<a href="#ref-19" class="cite">[19]</a>;冷启每张过审卡 100 元奖励+10 万奖池(原样对标抖音)</li>
+      <li><b>IP 角色对话（中期,融合原 E2）</b> 盐言故事是现成「角色宇宙」但停在读。三入口:① 阅读页每章末「和 TA 聊聊」(人设 RAG 锁原文防 OOC);② 「故事角色馆」tab 按古言/悬疑/复仇聚合可撩可玩角色;③ 多角色剧情模式(对标 Zeta plot,一世界观多角色,用户以主角身份推分支,与知识卡共用运行时)。付费:免费对话+深度剧情/语音通话/专属记忆付费,25 元包月带(星野主流模式);<b>合规红线</b>:按网信办《拟人化互动服务》新规——显著 AI 标识、连续 2 小时弹窗、训练单独授权、极端情绪人工接管(全线合规风险最高,法务前置)</li>
+      <li><b>可以玩的故事（终局,融合原 N16）</b> 短视频式界面:播一段 AI 生成剧情→弹三选一→选择决定结局。管线:盐言头部 IP→L5 Agent 抽主线+抉择点生成分支脚本(对标 ICG Studio「故事蓝本→剧本大纲→全局资产→分镜→分支」<a href="#ref-74" class="cite">[74]</a>)→画面 API 采购(Seedance+图2;可灵 0.43、即梦 1.38 元/秒批发价<a href="#ref-63" class="cite">[63]</a>,不自研模型)→订阅权益内解锁+单部付费(《完蛋!》6 万同时在线、抖音话题 16 亿播放验证付费<a href="#ref-78" class="cite soft">[78]</a>;互动剧 2026.09 纳入广电备案独立类别,政策开闸<a href="#ref-75" class="cite">[75]</a>)→成品授权 Steam/移动端(知乎取改编权+分成,定位 IP 水源+分支脚本层,不做研发发行)</li>
+      <li><b>底座</b> 卡/角色/影游共用 L5 的 HTML 交互引擎——引擎只建一次</li>
+    </ul>`,
+    short: { feat: '策略=「三线并验,预算极小」:首批 300 张知识卡进推荐流(3 万元冷启奖<a href="#ref-19" class="cite">[19]</a>);同步 Top100 盐言 IP 各出 1 个主角做对话 MVP,阅读页「和 TA 聊聊」灰度;付费墙只开「续写结局」单点',
+      kr: 'KR1 卡片人均试玩 ≥45s(抖音 70% 完播作基准);KR2 角色对话渗透 ≥8%、人均 ≥6 轮/日(C.AI 粘性下限)、付费转化 ≥1.5% 且作者分成账户 100% 开通;KR3 大学生占比 +2pp<a href="#ref-3" class="cite soft">[3]</a>',
+      roi: '1 前端+1 产品+2 算法+盐言编辑复用;验证期不计收益——本阶段只考核三个行为率(试玩/对话/转化)<a href="#ref-19" class="cite">[19]</a>' },
+    mid: { feat: '策略=「供给侧开放」:AI 工坊三栏工具上线,答主大白话生成互动作品(对标剪映 6.6 亿用户跟拍文化<a href="#ref-31" class="cite">[31]</a>);作者从自己小说一键生成角色;多角色剧情模式上线;角色挂进知识卡体系成「故事体验卡」;激励对标剪映 1.5 亿/年创作者池<a href="#ref-33" class="cite">[33]</a>',
+      kr: 'KR1 工坊创作者 ≥1 万、月产卡 ≥1 万张(对标小红书 4-5 万 Vibe Coding/月<a href="#ref-18" class="cite">[18]</a>);KR2 角色总量 5000+、月对话用户破 300 万、互动 ARPU ≥12 元/月付费用户;KR3 18-30 岁占盐言新增 ≥60%(对标 C.AI 56% 年龄结构)',
+      roi: '工坊不烧钱,激励撬动;<b>本阶段测算</b>:互动时长广告归因 0.2~0.3 亿+角色付费 1.5~4% 渗透×ARPPU 15~25 元→0.8~1.2 亿;年轻化是用户年龄结构反转最快杠杆' },
+    long: { feat: '策略=「吃终局形态红利」:影游管线全量(脚本→视觉→订阅/单部付费→Steam 授权);开放 UGC 自创角色(对标 C.AI 1800 万角色社区机制);角色跨形态流动(小说→漫剧→互动剧→陪伴对话同一资产复用)',
+      kr: 'KR1 在架可玩作品 ≥200 部、互动 GMV ≥10 亿;KR2 角色互动日活破千万、衍生收入年化 ≥5 亿;KR3 影游拉动付费会员转化 ≥3%',
+      roi: '<b>长期高 ROI 护城河</b>——模型会被卷成白菜价,验证过的故事池(盐言 20 万部签约作品<a href="#ref-78" class="cite soft">[78]</a>)只有知乎有;《盛世天下》12 天 200 万套验证付费天花板<a href="#ref-77" class="cite">[77]</a>;<b>本阶段测算</b>:线收敛 2.5~3.5 亿<a href="#ref-76" class="cite">[76]</a>,合规投入(算力+内容安全)持续——「慢一点但稳一点」' }
+  },
+  {
+    n: 'L3', tier: 'tier-1', name: '答主资产化（分身×技能卡×语料授权）', bench: '对标 Meta AI Studio 一年数十万角色 <a href="#ref-15" class="cite" data-tip="Snaplama 2026">[15]</a> · Sora cameo 声音/形象授权 <a href="#ref-42" class="cite">[42]</a> · 抖音分身三位一体(引用历史+商业转化+爆款分析) <a href="#ref-15" class="cite">[15]</a> · 小红书 RED Skill+Apps in ChatGPT <a href="#ref-64" class="cite obs">[64]</a> · Coze Token 分成 <a href="#ref-60" class="cite">[60]</a> · 豆包 2.27 亿 MAU <a href="#ref-60" class="cite">[60]</a> · Neodata/Wind/Bloomberg BQL <a href="#ref-10" class="cite">[10]</a>',
+    pan: { user: '供给侧 365 万深度创作者+15 万专家网络(覆盖 1.5 万垂类)<a href="#ref-4" class="cite">[4]</a>(数仓实测头部 C4+ 24,506 人<a href="#ref-82" class="cite">[82]</a>);需求侧=豆包式提问用户(2025Q4 MAU 2.27 亿、首个日活破亿 AI 原生 App,但答不了「有专业背书的可信答案」<a href="#ref-60" class="cite">[60]</a>)+ B 端模型厂商(国际模型中文占比不足千分之一<a href="#ref-55" class="cite">[55]</a>)', tam: '知识付费 2808.8 亿的「专家服务」切片<a href="#ref-51" class="cite soft">[51]</a>;中国 AI 语料 109 亿(CAGR 25%+)<a href="#ref-55" class="cite">[55]</a>;全球训练数据集 $87.4 亿→$498 亿<a href="#ref-56" class="cite">[56]</a>', rev: '2028E <b>1.3~2.5 亿/年</b>(分身订阅 0.5~1 亿+语料/授权 0.8~1.5 亿,2028 语料冲 2~3 亿取保守) ｜<b>答主侧(直接)</b> 分身分成 0.35~0.7 亿+授权分成(30~50%)0.3~0.7 亿≈<b>0.7~1.4 亿/年</b>,头部专家年 ¥3500~7000+1~5 万 ' },
+    product: `<ul>
+      <li><b>答主 AI 分身（融合原 N4）</b> 答主昵称旁蓝色「AI 分身」角标;评论区/私信新问题先由分身答,固定尾注「由 AI 分身回答 · 本人已审核 / 向本人直接提问」;答主每周审核纠错、纠错回流训练。技术上=RAG 在该答主全部历史回答+声音克隆+语气 LLM,边界设置(哪些问题不接)对标 Meta/Sora 授权范式<a href="#ref-16" class="cite">[16]</a><a href="#ref-42" class="cite">[42]</a>;分身「三位一体」照抄抖音形态:引用历史内容+自动商业转化(挂盐选/咨询/带货)+爆款分析<a href="#ref-15" class="cite">[15]</a>。付费=分身主页 ¥9.9/月无限向这位答主提问</li>
+      <li><b>技能卡（融合原 N13①）</b> 答主方法论封装成回答正文里的交互块:择校评估/合同初筛/简历诊断——读者贴材料、10 秒出个性化结果,结果页引导「订阅深聊」;模板由 L5 Agent 从答主历史回答自动提炼;可挂主页/回答/文章任意位置,<b>他人文章也可嵌卡按调用分成</b>(对标 RED Skill 笔记内挂载+Coze Token 分成<a href="#ref-64" class="cite obs">[64]</a>);「卡片即应用」形态对标 Apps in ChatGPT<a href="#ref-64" class="cite obs">[64]</a></li>
+      <li><b>语料/标注 API（融合原 N11,B 端无 C 界面）</b> 可溯源真人问答对+专家标注(复用 15 万专家网络<a href="#ref-4" class="cite">[4]</a>)卖给模型厂商;分层卖:语料 API(基础)→标注 API(高客单)→知识库订阅(顶级);境内不出境,《数据安全法》合规<a href="#ref-40" class="cite">[40]</a>;稀缺锚:红杉「中文 AI 最稀缺=数据+专家」<a href="#ref-27" class="cite obs">[27]</a></li>
+      <li><b>引用计费（终局）</b> 外部 AI 引用知乎一条收一条费——对标 YouTube 占 Google AI Overviews 引用 29.5% 的议价故事<a href="#ref-13" class="cite">[13]</a>;与 L4 站内 Ask 化同盘两面(站内订阅 vs 站外授权)</li>
+    </ul>`,
+    short: { feat: '策略=「先让 100 个人跑通经济模型」:100 位头部答主分身灰度(评论区分身+声音克隆,AI 强制标注);Top100 答主主页挂技能卡(模板 20 套,Agent 从历史回答自动提炼);语料 API 灰度首批接 3 家(豆包/文心/通义方向)',
+      kr: 'KR1 分身接管回复率 ≥40%(真减轻答主负担)、分身日活/答主 ≥30%;KR2 卡片互动完成率 ≥40%;KR3 API 接入 ≥3 家',
+      roi: '激活存量、边际成本≈0(Meta AI Studio 一年数十万角色<a href="#ref-15" class="cite">[15]</a>);<b>本阶段测算</b>:订阅不计收益;语料首批授权合同 0.1~0.3 亿(境内不出境<a href="#ref-40" class="cite">[40]</a>;全国数据交易累计成交近 40 亿的早期盘×稀缺层溢价<a href="#ref-59" class="cite">[59]</a>)' },
+    mid: { feat: '策略=「两种卖法同时开闸」:付费订阅「向 XX 提问」全量+分身自动商业转化接盐选/咨询/带货;技能卡市场上线(他人嵌卡按调用分成);专家网络 to B 高客单铺开(咨询/投研/法务/医疗)',
+      kr: 'KR1 授权分身 3000~5000(C4+ 2.45 万<a href="#ref-82" class="cite">[82]</a>的 12~20%,原「1 万」目标经数仓校准)、在架卡片 3000+;KR2 创作者人均变现 +¥200/月;KR3 订阅客单价 ≥¥9.9/月',
+      roi: '<b>本阶段测算</b>:分身 3000~5000×9.9 元×付费渗透(参照星野 6.9%/ARPPU $5)→0.03~0.08 亿+卡分成 0.05~0.1 亿<a href="#ref-64" class="cite soft">[64]</a>+语料扩客 0.3~0.6 亿(复用 15 万专家<a href="#ref-4" class="cite">[4]</a>);垂类口径:首批 100 垂类大 V×付费 5 万×¥9.9×答主侧 70%≈0.05~0.1 亿' },
+    long: { feat: '策略=「对外分发即护城河」:分身入驻豆包/Coze 智能体商店+抖音/小红书开放(去流量所在地卖答案<a href="#ref-60" class="cite">[60]</a>);全网引用费上线——知乎变成「被引用的 API」',
+      kr: 'KR1 分身日活交互破千万、跨平台分发占比 ≥30%;KR2 引用覆盖率 ≥30%、外部调用量月活破亿',
+      roi: '<b>长期高 ROI、最深护城河</b>(Stratechery:AI 让可溯源专业知识溢价更高<a href="#ref-26" class="cite obs">[26]</a>;a16z「AI 分身是 2026 最被低估赛道」<a href="#ref-25" class="cite obs">[25]</a>;虚拟网红市场 2032 $1546 亿<a href="#ref-28" class="cite">[28]</a>);<b>本阶段测算</b>:收敛 1.3~2.5 亿/年,答主侧分成 0.7~1.4 亿——「先让答主赚钱、平台抽佣后置」是 DAC 向上的经济前提<a href="#ref-13" class="cite">[13]</a>' }
+  },
+
+  // ===== TIER 2: 基建 =====
+  {
+    n: 'L4', tier: 'tier-2', name: 'Ask 化+原生供给', bench: '对标 YouTube Ask 2000 万月活 <a href="#ref-11" class="cite" data-tip="Neal Mohan 2026.01">[11]</a> · Grok Ask <a href="#ref-25" class="cite obs">[25]</a> · 知乎直答(MAU +260%,已升级 AI 看山) <a href="#ref-1" class="cite">[1]</a> · Perplexity Pages',
+    pan: { user: '8000 万 MAU 中提问型用户 2000~3000 万/月;外部 6.02 亿生成式 AI 用户的「可信答案」需求溢出<a href="#ref-7" class="cite">[7]</a>——数仓实测站内新增提问两月 -25%<a href="#ref-80" class="cite">[80]</a>,本线是止血动作', tam: '知识付费 2808.8 亿盘内的「提问入口」<a href="#ref-51" class="cite soft">[51]</a>;授权收入归 L3 不重复', rev: '<b>间接 0.6~1 亿/年</b>(续费 +1~2pp+付费转化+时长广告三段拼) ｜<b>答主侧</b> 被引用/被追问流量分成,头部 C3+ 人均 +¥20~40/月 ' },
+    product: `<ul>
+      <li><b>追问条（融合原 N1,三入口）</b> ① 回答读完底部固定悬浮条「没看明白?就这条回答继续问」+AI 预生成 3 个推荐追问;② 长按回答任意段落→「追问这一段」;③ 搜索结果页高赞回答挂「AI 可追问」角标。点击在回答下方展开 AI 面板:基于该回答+关联回答+论文库生成,<b>逐句带引用序号,点序号跳回原文段落高亮</b>;追问可接链(对 AI 答案再问)形成「读一篇→问到底」<a href="#ref-11" class="cite">[11]</a></li>
+      <li><b>AI 直答（融合原 N8=N1 的中级延伸）</b> 长期没人答的新提问(高搜索低供给长尾),问题页直接显示「AI 直答」卡片:站内相关内容组织而成、挂原文链接、标注「AI 生成·附来源」;真人答主可随时接管覆盖(署名「经 XX 审核」);「AI 答主」只挂人类答主列表+真人监督,对标 EU AI Act<a href="#ref-41" class="cite">[41]</a></li>
+      <li><b>技术</b> RAG(回答+关联+论文库)+引用溯源+function calling 调检索 API——复用 AI 看山底座,直答已验证(MAU +260%<a href="#ref-1" class="cite">[1]</a>)<a href="#ref-39" class="cite obs">[39]</a></li>
+      <li><b>答主激励</b> 被引用/被追问的答主获流量分成+主页「被 AI 引用」标识——给 L3 的引用计费攒资产</li>
+    </ul>`,
+    short: { feat: '策略=「3 人月换三个率」:仅 Top 1% C3+ 回答灰度追问条(头部约覆盖 2000~3000 万提问用户的主需求<a href="#ref-51" class="cite">[51]</a>);答主端加「被追问次数」统计;AI 答案逐句引用为硬要求,无引用不出街',
+      kr: 'KR1 追问渗透 ≥5%(对标 YouTube Ask 早期<a href="#ref-11" class="cite">[11]</a>);KR2 二次追问率 ≥30%;KR3 引用点击率 ≥15%',
+      roi: '1 算法+1 前端+1 产品(复用底座≈3 人月<a href="#ref-39" class="cite">[39]</a>),直接命中次月留存与时长,<b>短期高 ROI</b>;验证期不计收益,三个率定去留' },
+    mid: { feat: '策略=「从工具变体裁」:追问全量开放+「同一问题聚合多位答主观点」(追问面板横滑对比)+答主分成机制上线+答主「接管」AI 答案升级真人答案;AI 直答全量铺长尾',
+      kr: 'KR1 追问渗透 ≥15%;KR2 次月留存 +3pp;KR3 参与追问答主月收入 +20%;长尾问题回答率 ≥60%、直答 MAU +50%(N8 口径并入)',
+      roi: '投入翻倍(检索成本);<b>本阶段测算</b>:15% 渗透≈120 万月追问用户(8000 万 MAU×15%<a href="#ref-3" class="cite soft">[3]</a>);会员侧 ≈0.3 亿/年(1220 万会员×续费 +1~2pp×摊 ~126 元<a href="#ref-2" class="cite">[2]</a>),广告归因继续累积' },
+    long: { feat: '「可溯源知识问答」开放为知识 API 供第三方 AI 调用(站内前身,对外计量收费归 L3);AI 答主覆盖 ≥50% 头部问题',
+      kr: 'KR1 AI 引用 ≥1 亿次/月;KR2 真人监督覆盖率 100%;KR3 AI 内容 C3+ 占比 ≥10%',
+      roi: '<b>长期高 ROI 护城河</b>;<b>本阶段测算</b>:引用计费/授权收益按 L3 口径(外部调用破亿/月),本线守提问入口与留存不另计防重复——6.02 亿 AI 用户/42.8% 渗透的盘子,入口不守就是把提问白送<a href="#ref-7" class="cite">[7]</a>' }
+  },
+  {
+    n: 'L5', tier: 'tier-2', name: '创作引擎（Agent×HTML×视频×网站）', bench: '对标腾讯 WorkRally <a href="#ref-24" class="cite" data-tip="腾讯 2025 财报">[24]</a> · 剪映 Hub/剪同款 <a href="#ref-22" class="cite" data-tip="光明网 2026.09">[22]</a> · B 站 updream 长期记忆 <a href="#ref-44" class="cite">[44]</a> · Lovable 2 个月 $20M→$200M ARR <a href="#ref-65" class="cite">[65]</a> · Claude Artifacts <a href="#ref-69" class="cite obs">[69]</a> · 可灵 6000 万创作者 <a href="#ref-61" class="cite">[61]</a> · 即梦 1352.5 万 MAU <a href="#ref-62" class="cite">[62]</a> · Bruno Simon 3D 作品集 <a href="#ref-68" class="cite obs">[68]</a> · TRAE「面试靠点」<a href="#ref-67" class="cite obs">[67]</a>',
+    pan: { user: '全量 8030 万注册创作者<a href="#ref-4" class="cite">[4]</a>+机构团队;消费侧=深度阅读 1200~2000 万(交互版)+求职者/大学生(L6)+视频消费用户', tam: 'Lovable 单公司 $200M ARR≈14 亿元验证「对话生成应用」付费深度<a href="#ref-65" class="cite">[65]</a>;Gartner:2026 年 75% 新应用低代码化<a href="#ref-66" class="cite">[66]</a>;中国 AI 视频 2026E $80~100 亿(采购不自建<a href="#ref-62" class="cite">[62]</a>)', rev: '<b>降本 1~2 亿/年</b>(创作时长 -50%,一份基建多线共用)+<b>直接 0.6~1.4 亿/年</b>(交互文章时长付费上浮+网站 Pro 订阅 0.3~0.6 亿+视频间接增益;授权归 L3、影游归 L2 不重复) ' },
+    product: `<ul>
+      <li><b>创作 Agent（融合原 N5,作者侧）</b> 发布编辑器改四步向导:选题(AI 看站内流量提示「该话题 30 天搜索 +42%、已有回答缺复试权重角度」)→初稿(圈定论点,AI 检索出带引用的资料简报)→核查(疑似错误句标红,点击给修正+出处)→排版(一键套盐选样式);技术=服务端 function calling 直调搜索/数据/发布 API(稳)+客户端对话式 Agent(灵)双层,长期记忆沉淀本人风格(对标 updream<a href="#ref-44" class="cite">[44]</a>)</li>
+      <li><b>「交互版」开关（原 N13②,核心资产）</b> 发布页勾选「生成交互版」→文章编译成能用的网页:图表改参数重算、推演拖滑块(讲房贷=内嵌月供计算器)、时间线可展开、文末测验与技能卡——读者从「看文章」变「用文章」;付费墙=解锁可交互源数据。对标 Lovable 对话生成应用<a href="#ref-65" class="cite">[65]</a>+Claude Artifacts 单 HTML 可交互<a href="#ref-69" class="cite obs">[69]</a>;存量 9.5 亿条批量编译、零边际成本<a href="#ref-4" class="cite">[4]</a>。<b>为什么它是核心</b>:技能卡是「产一个工具」低频高门槛,HTML 化是全量外壳;且它同时是 L2 影游容器和 L6 校园卡的运行时——一套引擎三处产出</li>
+      <li><b>视频门面（融合原 N12）</b> ① 回答管理页「把这条回答拍成视频」三档:数字人口播/素材混剪/AI 画面,<b>成片逐段挂原回答引用条</b>(知乎视频和抖音视频的差别);② 「视频问答」引入体裁:专业短视频挂问题下,AI 抽章节+字幕+观点摘要,只做有专业背书的知识视频;③ 「一键拍成 60 秒解释视频」30 套模板跟拍(收编原 N3 能力);不自研模型——可灵 0.43、即梦 1.38 元/秒 API 批发<a href="#ref-63" class="cite">[63]</a>,AI 视频供给过剩时代稀缺的是「值得拍成视频的知识」<a href="#ref-62" class="cite">[62]</a></li>
+      <li><b>网站门面（融合原 N14）</b> 个人主页「生成我的网站」,一句话描述→分钟级建持续进化的站,<b>模板不是文章是网站</b>:求职作品集(回答自动聚合成案例页、「会做 X」=现场演示 X 组件、面试当场打开——「以前面试靠讲,现在面试靠点」<a href="#ref-67" class="cite obs">[67]</a>)/公开知识库(历史回答重组成知识地图+全站可问答,复用 L4 底座)/团队计划站(like waytoagi:公开研究 roadmap、读者订阅进展)/品牌站(一键发布+域名、访客直连 L3 分身付费);3D 模块:单 prompt 程序化 3D 场景<a href="#ref-69" class="cite obs">[69]</a>+MCP image-to-3D 素材链<a href="#ref-70" class="cite obs">[70]</a>,破圈范本 Bruno Simon 3D 作品集<a href="#ref-68" class="cite obs">[68]</a>;复用交互版同一 HTML 底座(zhihu.pub 子域托管)</li>
+    </ul>`,
+    short: { feat: '策略=「三环跑通+两个灰度」:Agent 先只做研究简报/事实核查/排版三环(选题发布闭环 3 个月内上线,复用 AI 看山<a href="#ref-39" class="cite obs">[39]</a>);Top1000 长文「一键交互化」+Top5000 回答视频化灰度(挂原引用条);50 位头部答主内测「主页一键成站」;新加 HTML 渲染沙箱(4~6 人月)',
+      kr: 'KR1 Agent 创作占比 ≥10%(注:现状编辑器 AI 渗透仅 2.5% 横盘<a href="#ref-81" class="cite">[81]</a>——正因功能按钮没人用,才做流程级整段接管);KR2 交互版打开率 ≥50%、停留 +60%;KR3 视频完播 ≥35%、单条成本 ≤¥5(API 批发价<a href="#ref-63" class="cite">[63]</a>)',
+      roi: '3~6 人月,<b>成本节约型高 ROI</b>;<b>本阶段测算</b>:节约 ≈0.2 亿/年起步;5000 条视频化 10%→间接增益 0.05~0.1 亿不计直接<a href="#ref-61" class="cite">[61]</a>;验证期核心考核停留弹性(交互版 vs 文字版)<a href="#ref-69" class="cite obs">[69]</a>' },
+    mid: { feat: '策略=「引擎变体裁、站成基建」:HTML 引擎全量,交互文章成独立体裁进推荐/搜索流(付费墙=解锁可交互源数据);视频问答全量+30 套模板;网站全量开放,Pro 订阅对标 Lovable/Framer $20~25/月档<a href="#ref-65" class="cite">[65]</a>;Agent 升级创作者 OS(记忆/风格/长期任务)',
+      kr: 'KR1 交互文章占专栏新发 ≥20%、单篇 ARPPU 上浮 2~3 倍;KR2 视频回答占新增 C3+ ≥15%、视频消费 DAU 渗透 ≥20%、视频→原回答跳转 ≥25%;KR3 10 万答主建站、Pro 转化 ≥5%;Agent 续费率 ≥60%',
+      roi: '<b>引擎复用在即</b>:L2 影游容器、L6 校园作品集同一套——定价与基建都不再单列;<b>本阶段测算</b>:时长→广告 0.2~0.4 亿+网站订阅 0.1 亿+技能卡分成 0.05~0.1 亿+累计节约 0.5~1 亿/年;即梦 1352.5 万 MAU 验证工具→消费漏斗<a href="#ref-62" class="cite">[62]</a>' },
+    long: { feat: '每篇高赞文章=可运行微型应用、每篇文章都是应用商店货架、可导出独立网页站外引流;知识视频库对外授权(收入归 L3);头部答主视频 IP 化(并入分身开播);30 万活跃个人站成答主对外门面;Agent 商店孵化垂类创作 Agent(对标剪映 Hub 20+官方 Skill+217 头部作者 Skill<a href="#ref-33" class="cite">[33]</a>)',
+      kr: 'KR1 视频形态占消费时长 ≥30%;KR2 卡片/应用日调用 ≥500 万;KR3 Agent 交易 GMV ≥1 亿',
+      roi: '<b>长期高 ROI 护城河</b>;<b>本阶段测算</b>:降本 1~2 亿/年+直接 0.6~1.4 亿/年;Agent 商店 GMV 1 亿×抽成 10%≈0.1 亿;创作者 OS 锁定迁移成本(IDC:2028 年 40% 企业集成 Agent<a href="#ref-48" class="cite obs">[48]</a>)——一份基建、多处收钱是 L5 的全部财务逻辑' }
+  },
+
+  // ===== TIER 3: 配套 =====
+  {
+    n: 'L6', tier: 'tier-3', name: '大学生增长（配套层）', bench: '对标小红书 00 后黑客松 60% 入围 <a href="#ref-18" class="cite" data-tip="中国经营报 2026.07">[18]</a> · 蓝鲸:知乎 30 岁以下已 73.2% <a href="#ref-3" class="cite soft">[3]</a> · TRAE「面试靠点」校园效应 <a href="#ref-67" class="cite obs">[67]</a>',
+    pan: { user: '在校大学生 4000 万+(教育部口径,BP 前以最新公报复核);考研/求职/专业选择刚需;知乎 30 岁以下已 73.2%<a href="#ref-3" class="cite soft">[3]</a>——问题不是没有年轻人,是没有「属于他们的用法」', tam: '知识付费消费主力 25-35 岁+学生占 60%+<a href="#ref-51" class="cite soft">[51]</a>', rev: '<b>不单列收益(防重复)</b>:创作者/DAU/付费/留存全部归 L1~L5 各线口径;本线考核资产指标+招聘联动独立探索(BOSS 直聘 IPO 估值 $80 亿对标);原 N10 的 0.3~0.5 亿口径废止 ' },
+    product: `<ul>
+      <li><b>本线独有(三件,五线做不了的)</b> 校园身份认证(edu/学信网,认证后昵称挂「已认证学生·XX 大学」蓝标,校园内容按本校聚合优先) + 100 校 500 名大使网络(= L2 知识卡的种子分发渠道,对标小红书 00 后创作者运营<a href="#ref-18" class="cite">[18]</a>) + 招聘联动探索(知乎×智联/Boss,应届生职业社区)</li>
+      <li><b>五线校园开关(本线的实际工作)</b> L1 考研/四六级音频片单(备考通勤场景)/ L2 专业选择模拟器+期末速成卡(<b>主阵地</b>,互动卡最天然的用户群)/ L3「学长学姐分身」¥9.9 学生档(保研/考研/求职咨询低客单)/ L4 考研真题长尾直答词表(真题=最大长尾问题库)/ L5 求职作品集模板+AI 创作训练营进校园(<b>教的就是 L5 工具</b>,结营即产内容)</li>
+      <li><b>学生看到什么</b> 还是同一个知乎:认证后多一个「校园」tab,课程期末评价/考研/实习话题优先;不是独立 App、不再造一套产品</li>
+      <li><b>配套资源(刻意压小)</b> 0.5~1 名校园运营+五线各 ≤1 人月配置级改动(总计 ≤5 人月)+大使/训练营预算 ≤300 万/年,总上限 ≈500 万/年(对齐原 N10 止损线口径)</li>
+    </ul>`,
+    short: { feat: '策略=「渠道先行,产品只开开关」:认证体系上线+大使 500 名招募(每校 5 人);L2 校园知识卡 300 张首发(专业选择/期末速成/考研模拟三类);L1 考研音频片单上线;训练营首季 10 校试点(课程=L5 工具实操,结营产出进站内)',
+      kr: 'KR1 大学生占比 +1pp(基线 30 岁以下 73.2%<a href="#ref-3" class="cite soft">[3]</a>);KR2 大使 ≥500、校园卡人均试玩与 K 值 ≥基线;KR3 训练营结营率 ≥60%',
+      roi: '投入期不计收益(≤500 万/年止损线);<b>本阶段测算</b>:00 后是互动内容天然传播者(小红书黑客松 60% 入围佐证<a href="#ref-18" class="cite">[18]</a>),资产指标=占比与 K 值' },
+    mid: { feat: '策略=「把学生导进五条线的付费漏斗」:L3 学生档分身(学长学姐低价咨询)全量;L5 训练营铺 100 校+求职作品集模板开学季投放;AI 辅助课程笔记/论文工具/求职辅导(复用 L4 Ask 化技术,N10 原中案并入开关层)',
+      kr: 'KR1 学生付费渗透 ≥5%(付费收入计 L3/L1 口径,本线不重复);KR2 大学生新增创作者 +20%',
+      roi: '<b>收益计所在线不重复</b>:付费渗透归 L3(原 N10「大学生付费率 5%×ARPPU~100 元→0.1~0.2 亿」并入 L3 测算)、新创作者归 L5(原口径 DAC 贡献)' },
+    long: { feat: '招聘联动独立探索:应届生职业社区×智联/Boss 直聘(简历=L5 作品集站,提问史=能力证据——知乎独有数据资产);若跑通,本线升格回独立收入线',
+      kr: 'KR1 应届生留存 ≥60%;KR2 招聘侧首批合同落地',
+      roi: '<b>本阶段测算</b>:除招聘联动(BOSS 直聘 IPO $80 亿对标的新探索)外,余量收益已在五条线兑现——重构的意义就是把一份校园预算摊进五条线' }
+  },
+];
+
+// ===== 长文本自动切分（只在标签/括号外的顶层 ; 处换行，内容一字不丢） =====
+function splitTop(str) {
+  const out = []; let cur = '', inTag = false, pd = 0;
+  for (let i = 0; i < str.length; i++) {
+    const c = str[i];
+    if (!inTag && c === '<' && /[a-zA-Z\/]/.test(str[i+1] || '')) inTag = true;
+    else if (inTag && c === '>') inTag = false;
+    if (!inTag) {
+      if (c === '(') pd++;
+      else if (c === ')' && pd > 0) pd--;
+      if ((c === ';' || c === '\uFF1B') && pd === 0) {
+        if (cur.trim()) out.push(cur.trim());
+        cur = '';
+        continue;
+      }
+    }
+    cur += c;
+  }
+  if (cur.trim()) out.push(cur.trim());
+  return out;
+}
+function fmtLines(str) {
+  const segs = splitTop(str);
+  return segs.length > 1 ? segs.map(t => '<div class="seg">' + t + '</div>').join('') : str;
+}
+function fmtKr(str) {
+  const segs = str.split(/(?=KR\d)/).map(t => t.trim()).filter(Boolean);
+  return segs.length > 1 ? segs.map(t => '<div class="seg">' + t + '</div>').join('') : str;
+}
+function fmtBench(str) {
+  const segs = str.split(' \u00b7 ');
+  return segs.length > 1 ? segs.map(t => '<div class="bench-line">' + t + '</div>').join('') : str;
+}
+function fmtProduct(html) {
+  return html.replace(/<li>([\s\S]*?)<\/li>/g, (m0, inner) => {
+    const segs = splitTop(inner);
+    if (segs.length <= 1) return m0;
+    return '<li>' + segs.map(t => '<div class="li-seg">' + t + '</div>').join('') + '</li>';
+  });
+}
+
+function renderDir(gridId, list) {
+  const grid = document.getElementById(gridId);
+  list.forEach(d => {
+    const el = document.createElement('div');
+    el.className = 'dir';
+    el.innerHTML = `
+      <div class="dir-head">
+        <div class="dir-num">${d.n}</div>
+        <div>
+          <div><span class="dir-name">${d.name}</span><span class="dir-tier ${d.tier}">${d.tier === 'tier-1' ? '主攻' : d.tier === 'tier-2' ? '基建' : '配套'}</span></div>
+          <div class="dir-bench">${fmtBench(d.bench)}</div>
+        </div>
+      </div>
+      ${d.pan ? `<div class="dir-pan">
+        <div><span class="pan-l">目标用户</span>${fmtLines(d.pan.user)}</div>
+        <div><span class="pan-l">盘子 TAM</span>${fmtLines(d.pan.tam)}</div>
+        <div><span class="pan-l">收益 SOM</span>${fmtLines(d.pan.rev)}</div>
+      </div>` : ''}
+      <div class="dir-product">
+        <div class="dir-product-h">产品形态</div>
+        <div class="dir-product-body">${fmtProduct(d.product)}</div>
+      </div>
+      <div class="stages">
+        <div class="stage">
+          <div class="stage-h"><span class="stage-label">短期</span><span class="stage-time">0–6 月</span></div>
+          <div class="stage-section"><div class="stage-section-lbl">功能</div><div class="stage-section-body">${fmtLines(d.short.feat)}</div></div>
+          <div class="stage-section"><div class="stage-section-lbl">OKR</div><div class="stage-kr">${fmtKr(d.short.kr)}</div></div>
+          <div class="stage-section"><div class="stage-section-lbl">ROI</div><div class="stage-section-body">${fmtLines(d.short.roi)}</div></div>
+        </div>
+        <div class="stage">
+          <div class="stage-h"><span class="stage-label">中期</span><span class="stage-time">6–18 月</span></div>
+          <div class="stage-section"><div class="stage-section-lbl">功能</div><div class="stage-section-body">${fmtLines(d.mid.feat)}</div></div>
+          <div class="stage-section"><div class="stage-section-lbl">OKR</div><div class="stage-kr">${fmtKr(d.mid.kr)}</div></div>
+          <div class="stage-section"><div class="stage-section-lbl">ROI</div><div class="stage-section-body">${fmtLines(d.mid.roi)}</div></div>
+        </div>
+        <div class="stage">
+          <div class="stage-h"><span class="stage-label">长期</span><span class="stage-time">18 月+</span></div>
+          <div class="stage-section"><div class="stage-section-lbl">功能</div><div class="stage-section-body">${fmtLines(d.long.feat)}</div></div>
+          <div class="stage-section"><div class="stage-section-lbl">OKR</div><div class="stage-kr">${fmtKr(d.long.kr)}</div></div>
+          <div class="stage-section"><div class="stage-section-lbl">ROI</div><div class="stage-section-body">${fmtLines(d.long.roi)}</div></div>
+        </div>
+      </div>
+    `;
+    grid.appendChild(el);
+  });
+}
+
+renderDir('dirGrid', directions.filter(d => d.tier === 'tier-1'));
+renderDir('dirGrid2', directions.filter(d => d.tier === 'tier-2'));
+renderDir('dirGrid3', directions.filter(d => d.tier === 'tier-3'));
+
+// GSAP
+gsap.registerPlugin(ScrollTrigger);
+gsap.utils.toArray('.dir').forEach((d, i) => { gsap.fromTo(d, { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: 0.8, ease: 'power3.out', delay: i * 0.04, scrollTrigger: { trigger: d, start: 'top 92%' } }); });
+gsap.from('.hero-h', { opacity: 0, y: 30, duration: 1.2, ease: 'power3.out' });
+gsap.from('.hero .kicker, .hero .lede', { opacity: 0, y: 20, duration: 0.8, ease: 'power3.out', delay: 0.4, stagger: 0.1 });
+</script>
+</body>
+</html>
